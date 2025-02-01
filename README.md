@@ -141,6 +141,23 @@ This project uses Docker to simplify setup and deployment. Follow these steps to
   
     `SELECT status FROM Invoices WHERE invoice_id = 1;` 
     Invoice status should be "Overdue" now
+- ### check_appointment_time_trigger
+     Checks if the new appointment is shceduled in working hours (8:00 - 16:00), if not, raises an exception
+  
+     **Usage:**
+  
+     `INSERT INTO Appointments (patient_id, doctor_id, appointment_date, appointment_time) VALUES (1, 1, '2024-10-26', '07:00');`
+
+     This should raise an exception as appointment is planned for 7am
+
+- ### calculate_invoice_total_trigger
+     Calucalted total_amount (cost of appointment) based on prices of all services permored during this appointment.
+  
+     **Usage:**
+  
+     `INSERT INTO Invoices (patient_id, appointment_id, invoice_date, due_date) VALUES (2, 2, '2024-10-27', '2024-11-10');`
+
+     If you look into invoices table now, total_amount was calucalted automatically.
 
 # Functions
 
@@ -157,6 +174,18 @@ This project uses Docker to simplify setup and deployment. Follow these steps to
     **Usage:**  
     `SELECT * FROM get_doctor_appointments(1);`  
     (Replace `1` with the desired doctor_id)
+  
+- ### count_doctor_appointments(doctor_id_input INT, start_date DATE, end_date DATE)
+   Counts appointments of particular doctor (with doctor_id_input) in given period (from start to end date)
+
+   **Usage:**  
+    `SELECT count_doctor_appointments(1, '2024-09-01', '2024-09-30');`
+
+- ### get_upcoming_appointments(days_ahead INT)
+  Shows all upcoming appointments in the next [days_ahead] days
+
+  **Usage:**  
+    `SELECT * FROM get_upcoming_appointments(7); `
     
 # Views
 
