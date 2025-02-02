@@ -141,6 +141,23 @@ This project uses Docker to simplify setup and deployment. Follow these steps to
   
     `SELECT status FROM Invoices WHERE invoice_id = 1;` 
     Invoice status should be "Overdue" now
+- ### check_appointment_time_trigger
+     Checks if the new appointment is shceduled in working hours (8:00 - 16:00), if not, raises an exception
+  
+     **Usage:**
+  
+     `INSERT INTO Appointments (patient_id, doctor_id, appointment_date, appointment_time) VALUES (1, 1, '2024-10-26', '07:00');`
+
+     This should raise an exception as appointment is planned for 7am
+
+- ### calculate_invoice_total_trigger
+     Calucalted total_amount (cost of appointment) based on prices of all services permored during this appointment.
+  
+     **Usage:**
+  
+     `INSERT INTO Invoices (patient_id, appointment_id, invoice_date, due_date) VALUES (2, 2, '2024-10-27', '2024-11-10');`
+
+     If you look into invoices table now, total_amount was calucalted automatically.
 
 # Functions
 
@@ -157,6 +174,18 @@ This project uses Docker to simplify setup and deployment. Follow these steps to
     **Usage:**  
     `SELECT * FROM get_doctor_appointments(1);`  
     (Replace `1` with the desired doctor_id)
+  
+- ### count_doctor_appointments(doctor_id_input INT, start_date DATE, end_date DATE)
+   Counts appointments of particular doctor (with doctor_id_input) in given period (from start to end date)
+
+   **Usage:**  
+    `SELECT count_doctor_appointments(1, '2024-09-01', '2024-09-30');`
+
+- ### get_upcoming_appointments(days_ahead INT)
+  Shows all upcoming appointments in the next [days_ahead] days
+
+  **Usage:**  
+    `SELECT * FROM get_upcoming_appointments(7); `
     
 # Views
 
@@ -184,3 +213,47 @@ This project uses Docker to simplify setup and deployment. Follow these steps to
     **Usage:**  
     `SELECT * from view_invoices_details;`
 
+   # Example Queries
+- Query 1: Find patients who have had at least two appointments with the same doctor in the last six months. Useful to find loyal patients.
+  ```
+      SELECT p.name AS patient_name, p.surname AS patient_surname, d.name AS doctor_name, d.surname AS doctor_surname,
+            COUNT(*) AS appointment_count
+      FROM Patients p
+      JOIN Appointments a ON p.patient_id = a.patient_id
+      JOIN Doctors d ON a.doctor_id = d.doctor_id
+      WHERE a.appointment_date >= CURRENT_DATE - INTERVAL '6 months'
+      GROUP BY p.patient_id, d.doctor_id
+      HAVING COUNT(*) > 1;```
+
+- Query 2: Find average monthly revenue per doctor. Useful for financial analysis and doctor's engagement.
+  ```
+  WITH MonthlyRevenue AS (
+    SELECT d.doctor_id, d.name AS doctor_name, d.surname AS doctor_surname, DATE_TRUNC('month', i.invoice_date) AS month, SUM(i.total_amount) AS monthly_revenue
+    FROM Doctors d
+    JOIN Appointments a ON d.doctor_id = a.doctor_id
+    JOIN Invoices i ON a.appointment_id = i.appointment_id
+    GROUP BY d.doctor_id, month
+   )
+   SELECT doctor_name, doctor_surname, AVG(monthly_revenue) AS average_monthly_revenue
+   FROM MonthlyRevenue
+   GROUP BY doctor_id, doctor_name, doctor_surname;
+  ```
+- Query 3: Find patients, who had appointments for all servieces in the clinic, useful to give some discounts to loyal patients;
+   ```
+   SELECT p.name AS patient_name, p.surname AS patient_surname
+   FROM Patients p
+   WHERE NOT EXISTS (
+       SELECT 1
+       FROM Services s
+       EXCEPT
+       SELECT s2.service_id
+       FROM Appointment_Services aps2
+       JOIN Appointments a2 ON aps2.appointment_id = a2.appointment_id
+       JOIN Services s2 ON aps2.service_id = s2.service_id
+       WHERE a2.patient_id = p.patient_id
+   );
+   
+   ```
+
+
+  
