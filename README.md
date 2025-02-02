@@ -219,7 +219,7 @@ This project uses Docker to simplify setup. Follow these steps to get the databa
     **Usage:**  
     `SELECT * from view_invoices_details;`
 
-   # Example Queries
+# Example Queries
 - Query 1: Find patients who have had at least two appointments with the same doctor in the last six months. Useful to find loyal patients.
   ```
       SELECT p.name AS patient_name, p.surname AS patient_surname, d.name AS doctor_name, d.surname AS doctor_surname,
