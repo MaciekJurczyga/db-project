@@ -20,10 +20,15 @@ This project uses Docker to simplify setup and deployment. Follow these steps to
    docker ps
    ```
 6. **Access the database:** Execute the following command to connect to medical_clinic database:
-    ```bash
-   docker exec -it db-project-db-1 psql -U admin -d medical_clinic
-   ```
-7. **Stopping the container:** After ending work on database, stop the container with following command:
+   - through CMD
+       ```bash
+      docker exec -it db-project-db-1 psql -U admin -d medical_clinic
+      ```
+   - through Docker Deskoopt (Containers -> db-project-db-1 -> Exec)
+      ```bash
+      psql -h localhost -p 5432  -U admin -d medical_clinic
+      ```
+8. **Stopping the container:** After ending work on database, stop the container with following command:
     ```bash
    docker-compose down
    ```
