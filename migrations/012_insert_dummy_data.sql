@@ -19,8 +19,8 @@ VALUES
 -- Inserting data into Appointments table
 INSERT INTO Appointments (patient_id, doctor_id, appointment_date, appointment_time, status)
 VALUES
-    (1, 1, '2024-09-10', '10:00', 'Scheduled'),
-    (2, 2, '2024-09-12', '14:30', 'Scheduled'),
+    (1, 1, '2025-02-05', '10:00', 'Scheduled'),
+    (2, 2, '2025-02-07', '14:30', 'Scheduled'),
     (3, 3, '2024-09-15', '09:00', 'Scheduled'),
     (4, 1, '2024-09-16', '11:00', 'Scheduled'),
     (5, 4, '2024-09-17', '12:00', 'Scheduled'),
