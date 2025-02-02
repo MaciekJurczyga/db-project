@@ -2,7 +2,7 @@
 
 # Running the System in Docker
 
-This project uses Docker to simplify setup and deployment. Follow these steps to get the database running:
+This project uses Docker to simplify setup. Follow these steps to get the database running:
 
 1. **Prerequisites:** Make sure you have Docker and Docker Compose installed on your system.
 
