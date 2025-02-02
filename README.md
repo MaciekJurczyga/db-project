@@ -213,3 +213,47 @@ This project uses Docker to simplify setup and deployment. Follow these steps to
     **Usage:**  
     `SELECT * from view_invoices_details;`
 
+   # Example Queries
+- Query 1: Find patients who have had at least two appointments with the same doctor in the last six months. Useful to find loyal patients.
+  ```
+      SELECT p.name AS patient_name, p.surname AS patient_surname, d.name AS doctor_name, d.surname AS doctor_surname,
+            COUNT(*) AS appointment_count
+      FROM Patients p
+      JOIN Appointments a ON p.patient_id = a.patient_id
+      JOIN Doctors d ON a.doctor_id = d.doctor_id
+      WHERE a.appointment_date >= CURRENT_DATE - INTERVAL '6 months'
+      GROUP BY p.patient_id, d.doctor_id
+      HAVING COUNT(*) > 1;```
+
+- Query 2: Find average monthly revenue per doctor. Useful for financial analysis and doctor's engagement.
+  ```
+  WITH MonthlyRevenue AS (
+    SELECT d.doctor_id, d.name AS doctor_name, d.surname AS doctor_surname, DATE_TRUNC('month', i.invoice_date) AS month, SUM(i.total_amount) AS monthly_revenue
+    FROM Doctors d
+    JOIN Appointments a ON d.doctor_id = a.doctor_id
+    JOIN Invoices i ON a.appointment_id = i.appointment_id
+    GROUP BY d.doctor_id, month
+   )
+   SELECT doctor_name, doctor_surname, AVG(monthly_revenue) AS average_monthly_revenue
+   FROM MonthlyRevenue
+   GROUP BY doctor_id, doctor_name, doctor_surname;
+  ```
+- Query 3: Find patients, who had appointments for all servieces in the clinic, useful to give some discounts to loyal patients;
+   ```
+   SELECT p.name AS patient_name, p.surname AS patient_surname
+   FROM Patients p
+   WHERE NOT EXISTS (
+       SELECT 1
+       FROM Services s
+       EXCEPT
+       SELECT s2.service_id
+       FROM Appointment_Services aps2
+       JOIN Appointments a2 ON aps2.appointment_id = a2.appointment_id
+       JOIN Services s2 ON aps2.service_id = s2.service_id
+       WHERE a2.patient_id = p.patient_id
+   );
+   
+   ```
+
+
+  
