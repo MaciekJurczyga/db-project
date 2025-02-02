@@ -33,6 +33,7 @@ This project uses Docker to simplify setup and deployment. Follow these steps to
    docker-compose down
    ```
 # Database Documentation
+![image](https://github.com/user-attachments/assets/bebd1c9e-3407-41f1-9057-ae95c547d9dd)
 
 ## Tables
 
